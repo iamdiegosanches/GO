@@ -7,4 +7,6 @@ import (
 
 func main() {
 	fmt.Println("Hello", stuff.Name)
+	strArr := stuff.IntArrToStrArr(intArr)
+	fmt.Println(strArr)
 }
