@@ -27,4 +27,5 @@ func main() {
 	pl("2 tsp > 4 tsp = ", Tsp(2) > Tsp(4))
 	fmt.Printf("3 tsp = %.2f ml\n", tspToML(3))
 	fmt.Printf("3 tsp = %.2f ml\n", tBToML(3))
+	// Worst way. Better way is associate methods
 }
