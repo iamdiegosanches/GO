@@ -17,10 +17,10 @@ func (L *List) GetSize() int {
 	return L.size
 }
 
-func (L *List) Insert(value interface{}) {
+func (L *List) Insert(val interface{}) {
 	list := &Node{
 		next: nil,
-		value: value,
+		value: val,
 	}
 	if L.head == nil {
 		L.head = list
@@ -63,7 +63,21 @@ func (L *List) Search(val interface{}) interface{} {
 	return nil
 }
 
-// TODO: implement delete function
-func (L *List) Delete(val interface{}) {
-	panic("Unimplemented function")
+func (L *List) Delete(val interface{}) bool {
+	prev := L.head
+	curr := L.head.next
+
+	for curr != nil {
+		if curr.value == val {
+			prev.next = curr.next
+			if L.tail == curr {
+				L.tail = prev
+			}
+			L.size--
+			return true
+		}
+		prev = curr
+		curr = curr.next
+	}
+	return false
 }
