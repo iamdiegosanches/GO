@@ -55,8 +55,15 @@ func (L *List) ReverseList() {
 }
 
 // TODO: implement search function
-func (L *List) Search(val interface{})  {
-	panic("Unimplemented function")
+func (L *List) Search(val interface{}) interface{} {
+	list := L.head
+	for i := 0; i < L.GetSize(); i++ {
+		if list.value == val {
+			return list.value
+		}
+		list = list.next
+	}
+	return nil
 }
 
 // TODO: implement delete function
