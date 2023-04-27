@@ -1,8 +1,6 @@
-package main
+package linkedlist
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type Node struct {
 	next *Node
@@ -68,18 +66,4 @@ func (L *List) Search(val interface{}) interface{} {
 // TODO: implement delete function
 func (L *List) Delete(val interface{}) {
 	panic("Unimplemented function")
-}
-
-func main() {
-	myList := List{}
-	myList.Insert(1)
-	myList.Insert(2)
-	myList.Insert(3)
-	myList.Insert(4)
-	myList.Insert(5)
-
-	myList.ReverseList()
-
-	myList.Display()
-
 }
