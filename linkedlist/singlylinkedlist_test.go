@@ -24,4 +24,18 @@ func TestLinkedList(t *testing.T) {
 	if list.head.value != 3 {
 		t.Errorf("Expected head value to be 3 after reversing the list")
 	}
+
+	if !list.Delete(1) {
+		t.Errorf("Expected Deletion of element")
+	}
+
+	if list.Delete(1) {
+		t.Errorf("Expected element not in the list")
+	}
+
+	if list.GetSize() != 2 {
+		t.Errorf("Expected size to be 2, got %d", list.GetSize())
+	}
+	
+	list.Display()
 }
