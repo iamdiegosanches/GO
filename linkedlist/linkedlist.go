@@ -54,7 +54,6 @@ func (L *List) ReverseList() {
 	L.head = previous
 }
 
-// TODO: implement search function
 func (L *List) Search(val interface{}) interface{} {
 	list := L.head
 	for i := 0; i < L.GetSize(); i++ {
