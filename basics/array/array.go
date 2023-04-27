@@ -5,6 +5,30 @@ package main
 import "fmt"
 
 func main() {
+   var myArray [5]int
+
+   // Set values in the array
+   myArray[0] = 10
+   myArray[1] = 20
+   myArray[2] = 30
+   myArray[3] = 40
+   myArray[4] = 50
+
+   // Access a value in the array
+   fmt.Println("The third element in the array is:", myArray[2])
+   
+   // Declare and initialize an array with shorthand syntax
+   anotherArray := [3]string{"apple", "banana", "cherry"}
+
+   // Print the entire array
+   fmt.Println("The second array is:", anotherArray)
+
+   // Loop through the array and print each value
+   for i := 0; i < len(myArray); i++ {
+       fmt.Println("Element", i, "is:", myArray[i])
+   }	
+  
+  // ------------ Exercises -----------------
   a := [...]int{0, 1, 2, 3}
 	x := a[:1]
 	y := a[2:]
@@ -15,36 +39,35 @@ func main() {
   // output: [0 2 3 3] [0 2 3 3 3]
   // Editing a slice will edit the content of the original array
   
-	var y = []string{"A", "B", "C", "D"}
-	var x = y[:3]
-	fmt.Printf("%v", x)
-	for i, s := range x {
-		print(i, s, ",")
-		x = append(x, "Z")
-		x[i+1] = "Z"
-	}
+   var y = []string{"A", "B", "C", "D"}
+   var x = y[:3]
+   fmt.Printf("%v", x)
+   for i, s := range x {
+	print(i, s, ",")
+	x = append(x, "Z")
+	x[i+1] = "Z"
+   }
   // output: 0A,1Z,2C,
   
-  var x = []string{"A", "B", "C"}
+   var x = []string{"A", "B", "C"}
 
-	for i, s := range x {
-		print(i, s, " ")
-		x = append(x, "Z")
-		x[i+1] = "Z"
-	}
-  // output: 0A,1B,2C,
+   for i, s := range x {
+	print(i, s, " ")
+	x = append(x, "Z")
+	x[i+1] = "Z"
+   }
+   // output: 0A,1B,2C,
   
-  var x = []string{"A", "B", "C"}
+   var x = []string{"A", "B", "C"}
 
-	for i, s := range x {
-		print(i, s, ",")
-		x[i+1] = "M"
-		x = append(x, "Z")
-		x[i+1] = "Z"
-	}
+   for i, s := range x {
+	print(i, s, ",")
+	x[i+1] = "M"
+	x = append(x, "Z")
+	x[i+1] = "Z"
+   }
   
   // output: 0A,1M,2C,
-  
   
   /*
   Key points:
