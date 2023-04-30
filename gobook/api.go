@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -10,68 +8,45 @@ import (
 	"github.com/google/uuid"
 )
 
-type APIServer struct {
-	listenAddr string
+// books slice to seed book data.
+var books = []Book{
+	{ID: uuid.New(), Title: "Blue Train", Author: "John Coltrane", PublicationDate: time.Date(1957, 9, 15, 0, 0, 0, 0, time.UTC), Publisher: "Blue Note"},
+	{ID: uuid.New(), Title: "To Kill a Mockingbird", Author: "Harper Lee", PublicationDate: time.Date(1960, 7, 11, 0, 0, 0, 0, time.UTC), Publisher: "J. B. Lippincott & Co."},
+	{ID: uuid.New(), Title: "The Great Gatsby", Author: "F. Scott Fitzgerald", PublicationDate: time.Date(1925, 4, 10, 0, 0, 0, 0, time.UTC), Publisher: "Charles Scribner's Sons"},
 }
 
-func NewAPIServer(listenAddr string) *APIServer {
-	return &APIServer{
-		listenAddr: listenAddr,
+func handleGetBooks(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, books)
+}
+
+func handlePostBooks(c *gin.Context) {
+	var newBook Book
+
+	// Call BindJSON to bind the received JSON to
+	// newAlbum.
+	if err := c.BindJSON(&newBook); err != nil {
+		return
 	}
+
+	// Add a new book to the slice
+	books = append(books, newBook)
+	c.IndentedJSON(http.StatusCreated, newBook)
 }
 
-func (s *APIServer) handleBook(c *gin.Context) error {
-	if c.Request.Method == "GET" {
-		return s.handleGetBook(c)
+func handleGetById(c *gin.Context) {
+	uuidParam := c.Param("uuid")
+	uuid, err := uuid.Parse(uuidParam)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid uuid"})
+		return
 	}
-	if c.Request.Method == "POST" {
-		return s.handleCreateBook(c)
-	}
-	if c.Request.Method == "DELETE" {
-		return s.handleDeleteBook(c)
-	}
-
-	return fmt.Errorf("method not allowed %s", c.Request.Method)
-}
-
-func (s *APIServer) handleGetBook(c *gin.Context) error {
-	defaultBook := Book{
-		ID:              uuid.New(),
-		Name:            "My Book",
-		Author:          "John Doe",
-		PublicationDate: time.Date(2022, time.January, 1, 0, 0, 0, 0, time.UTC),
-		Publisher:       "Acme Publishing",
-	}
-	c.JSON(http.StatusOK, defaultBook)
-	return nil
-}
-
-func (s *APIServer) handleCreateBook(c *gin.Context) error {
-	return nil
-}
-
-func (s *APIServer) handleDeleteBook(c *gin.Context) error {
-	return nil
-}
-
-func WriteJSON(w http.ResponseWriter, status int, v any) error {
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(status)
-	return json.NewEncoder(w).Encode(v)
-}
-
-type ApiError struct {
-	Error string
-}
-
-// This allows to define functions that handle HTTP requests and return erros
-// and then convert them into functions that handle HTTP request and handle errors internally
-// This way, you don't have to repeat the error handling logic for every function that handles
-// HTTP requests
-func makeHTTPHandleFunc(f func(*gin.Context) error) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if err := f(c); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// Loop over the list of albums, looking for
+	// an album whose ID value matches the parameter.
+	for _, a := range books {
+		if a.ID == uuid {
+			c.IndentedJSON(http.StatusOK, a)
+			return
 		}
 	}
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "book not found"})
 }
