@@ -7,9 +7,11 @@ import (
 func main() {
 	router := gin.Default()
 
-	s := NewAPIServer(":8080")
-	router.GET("/books", makeHTTPHandleFunc(s.handleGetBook))
-	router.POST("/books", makeHTTPHandleFunc(s.handleCreateBook))
+	ConnectDB()
+
+	router.GET("/books", handleGetBooks)
+	router.GET("/books/:uuid", handleGetById)
+	router.POST("/books", handlePostBooks)
 
 	router.Run()
 }
