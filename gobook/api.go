@@ -120,3 +120,26 @@ func handleGetById(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusOK, book)
 }
+
+func handleDeleteBook(c *gin.Context) {
+	uuidParam := c.Param("uuid")
+	uuid, err := uuid.Parse(uuidParam)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid uuid"})
+		return
+	}
+
+	collection := GetCollection(DB, "books")
+	filter := bson.D{{Key: "id", Value: uuid}}
+	deleteResult, err := collection.DeleteOne(context.Background(), filter)
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "failed to delete book"})
+		return
+	}
+	if deleteResult.DeletedCount == 0 {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "book not found"})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "book deleted"})
+}
