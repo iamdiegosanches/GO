@@ -14,36 +14,46 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 )
+
+var logger *zap.Logger
+
+func init() {
+	var err error
+	logger, err = zap.NewProduction()
+	if err != nil {
+		log.Fatalf("Error creating logger: %v", err)
+	}
+}
 
 func EnvMongoURI() string {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		logger.Fatal("Error loading .env file", zap.Error(err))
 	}
-
 	return os.Getenv("MONGOURI")
 }
 
 func ConnectDB() *mongo.Client {
 	client, err := mongo.NewClient(options.Client().ApplyURI(EnvMongoURI()))
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal("Error creating MongoDB client", zap.Error(err))
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	err = client.Connect(ctx)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal("Error connecting to MongoDB", zap.Error(err))
 	}
 
 	// ping database
 	err = client.Ping(ctx, nil)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal("Error pinging MongoDB", zap.Error(err))
 	}
-	fmt.Println("Connected to MongoDb")
+	fmt.Println("Connected to MongoDB")
 	return client
 }
 
@@ -76,9 +86,9 @@ func handleGetBooks(c *gin.Context) {
 func handlePostBooks(c *gin.Context) {
 	var newBook Book
 
-	// Call BindJSON to bind the received JSON to newBook.
-	if err := c.BindJSON(&newBook); err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid request"})
+	// call bind with validation
+	if err := c.ShouldBindJSON(&newBook); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
