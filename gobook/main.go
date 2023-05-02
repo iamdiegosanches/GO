@@ -12,6 +12,7 @@ func main() {
 	router.GET("/books", handleGetBooks)
 	router.GET("/books/:uuid", handleGetById)
 	router.POST("/books", handlePostBooks)
+	router.DELETE("/books/:uuid", handleDeleteBook)
 
-	router.Run()
+	router.Run(":8080")
 }
