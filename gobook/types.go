@@ -8,16 +8,16 @@ import (
 
 type Book struct {
 	ID              uuid.UUID `json:"id"`
-	Name            string    `json:"name"`
-	Author          string    `json:"author"`
-	PublicationDate time.Time `json:"publicationDate"`
-	Publisher       string    `json:"publisher"`
+	Title           string    `json:"title" binding:"required"`
+	Author          string    `json:"author" binding:"required"`
+	PublicationDate time.Time `json:"publicationDate" binding:"required"`
+	Publisher       string    `json:"publisher" binding:"required"`
 }
 
-func NewBook(name string, author string, publicationDate time.Time, publisher string) *Book {
+func NewBook(title string, author string, publicationDate time.Time, publisher string) *Book {
 	return &Book{
 		ID:              uuid.New(),
-		Name:            name,
+		Title:           title,
 		Author:          author,
 		PublicationDate: publicationDate,
 		Publisher:       publisher,
