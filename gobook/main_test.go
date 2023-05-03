@@ -30,7 +30,14 @@ func TestPostBookHandler(t *testing.T) {
 }
 
 func TestGetBooksHandler(t *testing.T) {
+	router := SetUpRuter()
+	router.GET("/books", handleGetBooks)
 
+	req, _ := http.NewRequest("GET", "/books", nil)
+
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestDeleteBooksHandler(t *testing.T) {
