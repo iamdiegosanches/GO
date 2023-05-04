@@ -92,8 +92,8 @@ func handlePostBooks(c *gin.Context) {
 		return
 	}
 
-	// Set the ID field of newBook to a new UUID
-	newBook.ID = uuid.New()
+	// Create a new book with an ID
+	newBook = *NewBook(newBook.Title, newBook.Author, newBook.PublicationDate, newBook.Publisher)
 
 	// Insert the new book into the MongoDB collection
 	collection := GetCollection(DB, "books")
