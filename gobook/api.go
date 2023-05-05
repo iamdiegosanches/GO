@@ -92,18 +92,18 @@ func handlePostBooks(c *gin.Context) {
 		return
 	}
 
-	// Create a new book with an ID
-	newBook = *NewBook(newBook.Title, newBook.Author, newBook.PublicationDate, newBook.Publisher)
+	// Create a new book with a generated ID
+	book := NewBook(newBook.Title, newBook.Author, newBook.PublicationDate, newBook.Publisher)
 
 	// Insert the new book into the MongoDB collection
 	collection := GetCollection(DB, "books")
-	_, err := collection.InsertOne(context.Background(), newBook)
+	_, err := collection.InsertOne(context.Background(), book)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "failed to insert book"})
 		return
 	}
 
-	c.IndentedJSON(http.StatusCreated, newBook)
+	c.IndentedJSON(http.StatusCreated, book)
 }
 
 func handleGetById(c *gin.Context) {
