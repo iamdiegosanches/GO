@@ -10,16 +10,20 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func SetUpRuter() *gin.Engine {
+func SetUpRuter() (*gin.Engine, *mongo.Client) {
 	router := gin.Default()
-	return router
+	client := ConnectDB()
+	return router, client
 }
 
 func TestPostBookHandler(t *testing.T) {
-	router := SetUpRuter()
-	router.POST("/books", handlePostBooks)
+	router, client := SetUpRuter()
+	router.POST("/books", func(c *gin.Context) {
+		handlePostBooks(c, client)
+	})
 	book := NewBook("Test", "Test Author", time.Now(), "Test Publisher")
 	jsonValue, _ := json.Marshal(book)
 	req, _ := http.NewRequest("POST", "/books", bytes.NewBuffer(jsonValue))
@@ -30,8 +34,10 @@ func TestPostBookHandler(t *testing.T) {
 }
 
 func TestGetBooksHandler(t *testing.T) {
-	router := SetUpRuter()
-	router.GET("/books", handleGetBooks)
+	router, client := SetUpRuter()
+	router.GET("/books", func(c *gin.Context) {
+		handleGetBooks(c, client)
+	})
 
 	req, _ := http.NewRequest("GET", "/books", nil)
 
@@ -41,9 +47,13 @@ func TestGetBooksHandler(t *testing.T) {
 }
 
 func TestDeleteBooksHandler(t *testing.T) {
-	router := SetUpRuter()
-	router.POST("/books", handlePostBooks)
-	router.DELETE("/books/:id", handleDeleteBook)
+	router, client := SetUpRuter()
+	router.POST("/books", func(c *gin.Context) {
+		handlePostBooks(c, client)
+	})
+	router.DELETE("/books/:uuid", func(c *gin.Context) {
+		handleDeleteBook(c, client)
+	})
 
 	book := NewBook("Test", "Test Author", time.Now(), "Test Publisher")
 	jsonValue, _ := json.Marshal(book)
