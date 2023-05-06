@@ -7,12 +7,20 @@ import (
 func main() {
 	router := gin.Default()
 
-	ConnectDB()
+	client := ConnectDB()
 
-	router.GET("/books", handleGetBooks)
-	router.GET("/books/:uuid", handleGetById)
-	router.POST("/books", handlePostBooks)
-	router.DELETE("/books/:uuid", handleDeleteBook)
+	router.GET("/books", func(c *gin.Context) {
+		handleGetBooks(c, client)
+	})
+	router.GET("/books/:uuid", func(c *gin.Context) {
+		handleGetById(c, client)
+	})
+	router.POST("/books", func(c *gin.Context) {
+		handlePostBooks(c, client)
+	})
+	router.DELETE("/books/:uuid", func(c *gin.Context) {
+		handleDeleteBook(c, client)
+	})
 
 	router.Run(":8080")
 }
