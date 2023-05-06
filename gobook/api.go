@@ -66,9 +66,9 @@ func GetCollection(client *mongo.Client, collectionName string) *mongo.Collectio
 	return collection
 }
 
-func handleGetBooks(c *gin.Context) {
+func handleGetBooks(c *gin.Context, client *mongo.Client) {
 	// Query all books from the MongoDB collection
-	collection := GetCollection(DB, "books")
+	collection := GetCollection(client, "books")
 	cursor, err := collection.Find(context.Background(), bson.D{})
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "failed to query books"})
@@ -83,7 +83,7 @@ func handleGetBooks(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, books)
 }
 
-func handlePostBooks(c *gin.Context) {
+func handlePostBooks(c *gin.Context, client *mongo.Client) {
 	var newBook Book
 
 	// call bind with validation
@@ -96,7 +96,7 @@ func handlePostBooks(c *gin.Context) {
 	book := NewBook(newBook.Title, newBook.Author, newBook.PublicationDate, newBook.Publisher)
 
 	// Insert the new book into the MongoDB collection
-	collection := GetCollection(DB, "books")
+	collection := GetCollection(client, "books")
 	_, err := collection.InsertOne(context.Background(), book)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "failed to insert book"})
@@ -106,7 +106,7 @@ func handlePostBooks(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, book)
 }
 
-func handleGetById(c *gin.Context) {
+func handleGetById(c *gin.Context, client *mongo.Client) {
 	uuidParam := c.Param("uuid")
 	uuid, err := uuid.Parse(uuidParam)
 	if err != nil {
@@ -115,7 +115,7 @@ func handleGetById(c *gin.Context) {
 	}
 
 	// Query the book by its ID from the MongoDB collection
-	collection := GetCollection(DB, "books")
+	collection := GetCollection(client, "books")
 	filter := bson.D{{Key: "id", Value: uuid}}
 	var book Book
 	err = collection.FindOne(context.Background(), filter).Decode(&book)
@@ -131,7 +131,7 @@ func handleGetById(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, book)
 }
 
-func handleDeleteBook(c *gin.Context) {
+func handleDeleteBook(c *gin.Context, client *mongo.Client) {
 	uuidParam := c.Param("uuid")
 	uuid, err := uuid.Parse(uuidParam)
 	if err != nil {
@@ -139,7 +139,7 @@ func handleDeleteBook(c *gin.Context) {
 		return
 	}
 
-	collection := GetCollection(DB, "books")
+	collection := GetCollection(client, "books")
 	filter := bson.D{{Key: "id", Value: uuid}}
 	deleteResult, err := collection.DeleteOne(context.Background(), filter)
 	if err != nil {
