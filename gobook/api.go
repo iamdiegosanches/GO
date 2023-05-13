@@ -66,21 +66,18 @@ func GetCollection(client *mongo.Client, collectionName string) *mongo.Collectio
 	return collection
 }
 
-func handleGetBooks(c *gin.Context, client *mongo.Client) {
+func handleGetBooks(c *gin.Context, client *mongo.Client) ([]Book, error) {
 	// Query all books from the MongoDB collection
 	collection := GetCollection(client, "books")
 	cursor, err := collection.Find(context.Background(), bson.D{})
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "failed to query books"})
-		return
+		return nil, err
 	}
 	var books []Book
 	if err = cursor.All(context.Background(), &books); err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "failed to decode books"})
-		return
+		return nil, err
 	}
-
-	c.IndentedJSON(http.StatusOK, books)
+	return books, nil
 }
 
 func handlePostBooks(c *gin.Context, client *mongo.Client) {
