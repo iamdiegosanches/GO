@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -9,8 +11,19 @@ func main() {
 
 	client := ConnectDB()
 
+	router.LoadHTMLGlob("views/*")
+	router.Static("/public", "./public")
+
 	router.GET("/books", func(c *gin.Context) {
-		handleGetBooks(c, client)
+		books, err := handleGetBooks(c, client)
+		if err != nil {
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "failed to query books"})
+			return
+		}
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"title": "Main website",
+			"books": books,
+		})
 	})
 	router.GET("/books/:uuid", func(c *gin.Context) {
 		handleGetById(c, client)
